@@ -56,7 +56,21 @@ function initMap() {
           /// define lolo function :D//
           var lolo=function () {
             populateInfoWindow(this, infowindow);
+             marker.addListener('click', toggleBounce);
+
         };
+            //**Google Maps Bounce Animation on Marker for a limited period**//
+                function toggleBounce() {
+                    if (marker.getAnimation() !== null) {
+                        marker.setAnimation(null);
+                    } else {
+                        marker.setAnimation(google.maps.Animation.BOUNCE);
+                        setTimeout(function () {
+                            marker.setAnimation() ;
+                        }, 1800);
+                    }
+                }
+
     // ** show markers by push marker to marker array **//
     for (var i = 0; i < locations.length; i++) {
         var position = locations[i].location;
@@ -90,15 +104,17 @@ function populateInfoWindow(marker, infowindow) {
             dataType: "jsonp",
             success: function (response) {
                 var articleList = response[1];
-                var locName = response[0];
+                var locName = response[3][0];
                 if (articleList.length > 0) {
                     for (var article in articleList) {
                         if (articleList.hasOwnProperty(article)) {
                             var element = articleList[article];
-                            str = "<a href='https://en.wikipedia.org/wiki/" + element + "'>" + element + "</a>" ;
+                            str = "<a href='" + locName + "'>" + element + "</a>" ;
                         }
                     }
                 }
+
+                //"https://en.wikipedia.org/wiki/Cairo_Manara_Boys%27_Language_School"
                 //**Create the info window content**//
                 infowindow.setContent('<div id="window"><p><i>School Title:</i> ' + marker.title + '</p>'+ ' <p>For more information visit :</p>' + str + ' </div>');
                 infowindow.marker = marker;
@@ -108,29 +124,18 @@ function populateInfoWindow(marker, infowindow) {
                     infowindow.marker = null;
                 });
 
-                //**Google Maps Bounce Animation on Marker for a limited period**//
-                function toggleBounce() {
-                    if (marker.getAnimation() !== null) {
-                        marker.setAnimation(null);
-                    } else {
-                        marker.setAnimation(google.maps.Animation.BOUNCE);
-                        setTimeout(function () {
-                            marker.setAnimation() ;
-                        }, 1800);
-                    }
-                }
 
-                marker.addListener('click', toggleBounce());
+
+               // marker.addListener('click', toggleBounce);
                 //**to make sure that the infowindow  is opend on it's marker**//
                 infowindow.open(map, marker);
                 str = "";
                },
             // handle ajax error used from stackoverflow
-            error: function (xhr, ajaxOptions, thrownError) {
-                   alert(xhr.status);
-                   alert(thrownError);
-            }
-        });
+
+        }).fail(function (jqXHR, textStatus) {
+                    alert("There is an Error loading Wikipedia API");
+                    });
       }
 }
 //**some functions and methods ideas are done through some github and google searches**//
