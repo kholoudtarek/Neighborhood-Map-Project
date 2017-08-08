@@ -56,11 +56,12 @@ function initMap() {
           /// define lolo function :D//
           var lolo=function () {
             populateInfoWindow(this, infowindow);
-             marker.addListener('click', toggleBounce);
+            toggleBounce(this);
+             //marker.addListener('click', toggleBounce);
 
         };
             //**Google Maps Bounce Animation on Marker for a limited period**//
-                function toggleBounce() {
+                function toggleBounce(marker) {
                     if (marker.getAnimation() !== null) {
                         marker.setAnimation(null);
                     } else {
